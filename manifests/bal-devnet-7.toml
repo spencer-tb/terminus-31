@@ -1,0 +1,46 @@
+# Manifest for bal-devnet-7
+#
+# Branch convention: <feat>-devnet-<N> across spec and clients.
+
+[devnet]
+name = "bal-devnet-7"
+feature = "bal"
+number = 7
+eips = ["EIP-8037"]
+
+# Spec / reference implementation
+
+[repos.eels]
+url = "https://github.com/ethereum/execution-specs"
+ref = "devnets/bal/7"
+binary = "ethereum-spec-evm"
+install_hint = "uv tool install git+https://github.com/ethereum/execution-specs@devnets/bal/7"
+
+# Clients driven by goevmlab statetest
+
+[clients.revm]
+url = "https://github.com/bluealloy/revm"
+ref = "bal-devnet-7"
+binary = "revme"
+install_hint = "cargo install --git https://github.com/bluealloy/revm --branch bal-devnet-7 revme"
+
+[clients.nethermind]
+url = "https://github.com/NethermindEth/nethermind"
+ref = "bal-devnet-7"
+binary = "nethtest"
+# brew's stable dotnet (10.0.105, Roslyn 5.0) is too old for nethermind's
+# analyzers (need Roslyn 5.3+). Install 10.0.300 GA via dotnet-install.sh,
+# publish framework-dependent, wrap with a shell script.
+install_hint = "curl -sSL https://dot.net/v1/dotnet-install.sh | bash -s -- --channel 10.0 --quality GA --install-dir ~/.dotnet && git clone -b bal-devnet-7 https://github.com/NethermindEth/nethermind && cd nethermind && PATH=~/.dotnet:$PATH dotnet publish src/Nethermind/Nethermind.Test.Runner -c Release -o $(pwd)/publish-out && printf '#!/bin/bash\\nexec ~/.dotnet/dotnet %s/publish-out/nethtest.dll \"$@\"\\n' $(pwd) > ~/.local/bin/nethtest && chmod +x ~/.local/bin/nethtest"
+
+[clients.nimbus]
+url = "https://github.com/status-im/nimbus-eth1"
+ref = "bal-devnet-7"
+binary = "evmstate"
+install_hint = "git clone -b bal-devnet-7 https://github.com/status-im/nimbus-eth1 && cd nimbus-eth1 && make update && make evmstate && ln -sf $(pwd)/tools/evmstate/evmstate ~/.local/bin/evmstate"
+
+# Tools (not devnet-versioned)
+
+[tools.goevmlab]
+url = "https://github.com/spencer-tb/goevmlab"
+ref = "bal-devnet-7"
