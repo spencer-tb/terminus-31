@@ -10,6 +10,7 @@ dependencies = []
 
 [project.scripts]
 terminus-31 = "terminus_31.cli:main"
+t31 = "terminus_31.cli:main"
 
 [build-system]
 requires = ["hatchling"]
