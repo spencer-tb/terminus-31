@@ -77,7 +77,27 @@ def build_parser() -> argparse.ArgumentParser:
         default=4,
         help="Parallel goroutines in goevmlab generic-fuzzer (default 4).",
     )
+
+    sub.add_parser(
+        "help",
+        help="Show help for every subcommand (top-level + init/check/fuzz-8037).",
+    )
     return parser
+
+
+def _print_all_help(parser: argparse.ArgumentParser) -> None:
+    """Print help for the top-level parser and every subcommand."""
+    parser.print_help()
+    print()
+    for action in parser._actions:
+        if not isinstance(action, argparse._SubParsersAction):
+            continue
+        for name, sub_parser in action.choices.items():
+            if name == "help":
+                continue
+            print(f"--- {name} ---\n")
+            sub_parser.print_help()
+            print()
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -98,6 +118,9 @@ def main(argv: list[str] | None = None) -> int:
             parallel=args.parallel,
             root=Path.cwd(),
         )
+    if args.command == "help":
+        _print_all_help(parser)
+        return 0
     print(
         f"command {args.command!r} not yet implemented",
         file=sys.stderr,
